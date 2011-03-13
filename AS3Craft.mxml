@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:local="*"
+			   minWidth="1024" minHeight="600" width="1024" height="600" applicationComplete="start()" backgroundColor="#ffffff"
+			   >
+<fx:Script>
+<![CDATA[
+	import mx.controls.Alert;
+	public var conn:MinecraftConnection;
+	public function start():void{
+		loginForm.addEventListener("login", loginHandler);
+		trace(splashLabel);
+	}
+	public function loginHandler(e:Event):void{
+		Alert.show(loginForm.host + ":" + loginForm.port + ":" + loginForm.username + ":" + loginForm.key);
+		conn=new MinecraftConnection(loginForm.host,loginForm.port,loginForm.username,loginForm.key);
+		conn.addEventListener(MinecraftConnection.HANDSHAKE, showLoadingPane);
+		conn.addEventListener(MinecraftConnection.DATA_RECIEVED, updateLoadPercent);
+		conn.connect();
+	}
+	public function updateLoadPercent(e:ProgressEvent):void{
+		trace("update" + e);
+		trace(serverLoadingBar);
+		serverLoadingBar.setProgress(e.bytesLoaded,100);
+	}
+	public function showLoadingPane(e:Event):void{
+		mainStack.selectedChild=loadingPane;
+		//mainStack.createComponentFromDescriptor(mainStack.childDescriptors[selectedIndex],true);
+		trace(e + "show");
+		trace(conn);
+		trace(serverNameLabel);
+		serverNameLabel.text=conn.serverName;
+		serverMOTDLabel.text=conn.serverMOTD;
+		serverLoadingBar.setProgress(0,100);
+		//mainStack.selectedChild=loadingPane;
+	}
+]]>
+</fx:Script>
+<!--<local:LoginForm id="loginForm"/>-->
+<mx:ViewStack id="mainStack" width="100%" height="100%">
+	<s:NavigatorContent id="splashPane" width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:Label text="AS3Craft Classic"/>
+		<s:Label id="splashLabel" text="This is not splash text!"/>
+		<local:LoginForm id="loginForm"/>
+	</s:NavigatorContent>
+	<s:NavigatorContent id="loadingPane" width="100%" height="100%" creationPolicy="all">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:Label text="Loading..."/>
+		<s:Label id="serverNameLabel"/>
+		<s:Label id="serverMOTDLabel"/>
+		<mx:ProgressBar id="serverLoadingBar" labelPlacement="bottom" minimum="0" visible="true" maximum="100" label="CurrentProgress" 
+			direction="right" mode="manual" width="100%"/>
+	</s:NavigatorContent>
+	<s:NavigatorContent id="worldPane" width="100%" height="100%">
+	</s:NavigatorContent>
+</mx:ViewStack>
+
+</s:Application>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Panel xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" title="Login">
+<fx:Script>
+	<![CDATA[
+		import flash.events.*;
+		public var host:String;
+		public var port:int;
+		public var username:String;
+		public var key:String;
+		protected function mineLogin():void{
+		}
+		protected function mcURLLogin(url:String):void{
+			var urlobj:Object;
+			try{
+				urlobj=MCURLDecoder.decode(url);
+				dispatchLogin(urlobj.host, urlobj.port, urlobj.username, urlobj.key);
+			}
+			catch(e:URIError){
+			}
+		}
+		private function dispatchLogin(host:String, port:int, username:String, key:String):void{
+			this.host=host;
+			this.port=port;
+			this.username=username;
+			this.key=key;
+			dispatchEvent(new Event("login"));
+		}
+]]>
+</fx:Script>
+<s:layout>
+	<s:VerticalLayout/>
+</s:layout>
+<!--<s:Label text="Minecraft.net login: "/>
+<s:HGroup>
+	<s:Label text="Username: "/><s:TextInput id="usernameInput"/>
+</s:HGroup>
+<s:HGroup>
+	<s:Label text="Password: "/><s:TextInput id="passwordInput" displayAsPassword="true"/>
+</s:HGroup>
+<s:Button label="Login" click="mineLogin()"/>-->
+<s:Label text="Enter a Minecraft Direct Connect url: "/>
+<s:HGroup>
+	<s:TextInput id="mcURLInput"/><s:Button label="Go!" click="mcURLLogin(mcURLInput.text)"/>
+</s:HGroup>
+</s:Panel>
