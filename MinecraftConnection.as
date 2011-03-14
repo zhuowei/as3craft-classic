@@ -209,6 +209,7 @@ package {
 			socket.flush();
 		}
 		public function sendMessage(msg:String):void{
+			socket.writeByte(0x0d);
 			socket.writeByte(0xff);//current user
 			socket.writeUTFBytes(padOut(msg));
 			socket.flush();

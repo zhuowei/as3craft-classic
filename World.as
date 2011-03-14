@@ -4,6 +4,7 @@ package {
 	import flash.events.*;
 	/** A representation of a Minecraft World. */
 	public class World extends EventDispatcher{
+		public static var PLAYER_READY:String="playerReady";
 		public var player:Object=new Object();	//a map containing players
 		public var xLength:int;
 		public var yLength:int;

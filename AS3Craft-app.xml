@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<application xmlns="http://ns.adobe.com/air/application/2.5"> 
+    <id>net.zhuowei.AS3Craft</id> 
+    <versionNumber>1.0</versionNumber> 
+    <filename>AS3Craft</filename> 
+    <initialWindow> 
+        <content>AS3Craft.swf</content> 
+        <visible>true</visible> 
+        <width>1024</width> 
+        <height>600</height> 
+    </initialWindow> 
+</application>

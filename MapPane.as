@@ -4,7 +4,7 @@ package {
 	import flash.geom.*;
 	import mx.core.*;
 	/** displays and allows the user to interact with a Minecraft Classic map. */
-	public class MapPane extends Sprite{
+	public class MapPane extends UIComponent{
 		private var mapWidth:int;
 		private var mapHeight:int;
 		private var conn:MinecraftConnection;
@@ -16,7 +16,7 @@ package {
 		private var _scrollY:int=0; //y maps to Z
 		private var isMouseDown:Boolean=false;
 		public var movePlayer:Boolean=true;
-		private var moved=false;
+		private var moved:Boolean=false;
 		private var lastMouseX:Number;
 		private var lastMouseY:Number;
 		private var beginMouseX:Number;
@@ -27,8 +27,8 @@ package {
 		public function MapPane(width:int, height:int, conn:MinecraftConnection){
 			mapWidth=width;
 			mapHeight=height;
-			//this.width=width;
-			//this.height=height;
+			this.width=width;
+			this.height=height;
 			this.conn=conn;
 			world=conn.world;
 			addMapImage();

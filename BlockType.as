@@ -9,5 +9,8 @@ package {
 			this.type=type;
 			this.label=label;
 		}
+		public function toString():String{
+			return label;
+		}
 	}
 }

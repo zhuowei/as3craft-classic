@@ -9,32 +9,44 @@
 <![CDATA[
 	import mx.controls.Alert;
 	public var conn:MinecraftConnection;
+	public var settingsMgr:SettingsManager=new SettingsManager();
 	public function start():void{
 		loginForm.addEventListener("login", loginHandler);
 		trace(splashLabel);
+		settingsMgr.loadTileset();
 	}
 	public function loginHandler(e:Event):void{
 		Alert.show(loginForm.host + ":" + loginForm.port + ":" + loginForm.username + ":" + loginForm.key);
 		conn=new MinecraftConnection(loginForm.host,loginForm.port,loginForm.username,loginForm.key);
 		conn.addEventListener(MinecraftConnection.HANDSHAKE, showLoadingPane);
 		conn.addEventListener(MinecraftConnection.DATA_RECIEVED, updateLoadPercent);
+		conn.world.addEventListener(World.PLAYER_READY, playerReadyHandler);
 		conn.connect();
 	}
+	public function playerReadyHandler(e:Event):void{
+		worldView.conn=conn;
+		worldView.start();
+		showWorldPane();
+	}
 	public function updateLoadPercent(e:ProgressEvent):void{
-		trace("update" + e);
-		trace(serverLoadingBar);
+		//trace("update" + e);
+		//trace(serverLoadingBar);
 		serverLoadingBar.setProgress(e.bytesLoaded,100);
 	}
 	public function showLoadingPane(e:Event):void{
 		mainStack.selectedChild=loadingPane;
 		//mainStack.createComponentFromDescriptor(mainStack.childDescriptors[selectedIndex],true);
-		trace(e + "show");
-		trace(conn);
-		trace(serverNameLabel);
+		//trace(e + "show");
+		//trace(conn);
+		//trace(serverNameLabel);
 		serverNameLabel.text=conn.serverName;
 		serverMOTDLabel.text=conn.serverMOTD;
 		serverLoadingBar.setProgress(0,100);
 		//mainStack.selectedChild=loadingPane;
+	}
+	public function showWorldPane():void{
+		//worldView.tileset=settingsMgr.tileset;
+		mainStack.selectedChild=worldPane;
 	}
 ]]>
 </fx:Script>
@@ -50,7 +62,7 @@
 	</s:NavigatorContent>
 	<s:NavigatorContent id="loadingPane" width="100%" height="100%" creationPolicy="all">
 		<s:layout>
-			<s:VerticalLayout/>
+			<s:VerticalLayout horizontalAlign="center" verticalAlign="middle"/>
 		</s:layout>
 		<s:Label text="Loading..."/>
 		<s:Label id="serverNameLabel"/>
@@ -58,7 +70,9 @@
 		<mx:ProgressBar id="serverLoadingBar" labelPlacement="bottom" minimum="0" visible="true" maximum="100" label="CurrentProgress" 
 			direction="right" mode="manual" width="100%"/>
 	</s:NavigatorContent>
-	<s:NavigatorContent id="worldPane" width="100%" height="100%">
+	<s:NavigatorContent id="worldPane" width="100%" height="100%" creationPolicy="all">
+		<s:Label text="This is the world pane."/>
+		<local:WorldView id="worldView" width="100%" height="100%"/>
 	</s:NavigatorContent>
 </mx:ViewStack>
 

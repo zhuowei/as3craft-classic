@@ -42,6 +42,6 @@
 <s:Button label="Login" click="mineLogin()"/>-->
 <s:Label text="Enter a Minecraft Direct Connect url: "/>
 <s:HGroup>
-	<s:TextInput id="mcURLInput"/><s:Button label="Go!" click="mcURLLogin(mcURLInput.text)"/>
+	<s:TextInput id="mcURLInput" widthInChars="35"/><s:Button label="Go!" click="mcURLLogin(mcURLInput.text)"/>
 </s:HGroup>
 </s:Panel>

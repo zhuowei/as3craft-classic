@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnableContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:local="*" >
+<fx:Script>
+	<![CDATA[
+		public var mapShowing:Boolean=false;
+		public var conn:MinecraftConnection;
+		public var mapPane:MapPane;
+		//public var tileset:Tileset;
+		[Embed(source="terrain.png")]
+		private var tileEmbed:Class;
+		public var tileset:Tileset= new Tileset((new tileEmbed() as Bitmap).bitmapData);
+		public function start():void{
+			conn.addEventListener(ChatEvent.RECIEVED, chatRecieved);
+			messageArea.text="\n\n\n\n\n\n\n\n\n\n\n\n\n";
+			//messageArea.height=chatPane.height - chatPaneInputGroup.height;
+			if(!mapPane){
+				mapPane=new MapPane(640,480,conn);
+				mapPane.tileset=tileset;
+				trace("tileset: " +tileset);
+				for(var i:Object in mapPane.tileset){
+					trace("tileset " + i);
+				}
+				mapGroup.addElement(mapPane);
+			}
+			
+		}
+		public function destroy():void{
+			conn.removeEventListener(ChatEvent.RECIEVED, chatRecieved);
+		}
+		public function chatRecieved(e:ChatEvent):void{
+			messageArea.text=messageArea.text.slice(messageArea.text.indexOf("\n")+1).concat(removeColor(e.message)+"\n");
+			//messageArea.text+=e.message+"\n";
+		}
+		public function showMap():void{
+			mainStack.selectedChild=mapChatView;
+			chatPane.height=chatInput.height;
+			worldPane.percentHeight=1;
+		}
+		public function showChat():void{
+			mainStack.selectedChild=mapChatView;
+			chatPane.height=chatPane.measuredHeight;
+			worldPane.height=mapChatView.height-chatPane.height;
+		}
+		public function showMenu():void{
+			mainStack.selectedChild=menuView;
+		}
+		public function sendClicked():void{
+			conn.sendMessage(chatInput.text);
+			chatInput.text="";
+		}
+		private function removeColor(str:String):String{
+			return str.replace(/&./g, "");
+		}
+]]>
+</fx:Script>
+<s:layout>
+	<s:VerticalLayout/>
+</s:layout>
+<!--<s:TabBar id="viewBar" dataProvider="{mainStack}"/>-->
+<s:HGroup depth="10"><s:Button label="Map" click="showMap()"/><s:Button label="Chat" click="showChat()"/><s:Button label="Menu" click="showMenu()"/></s:HGroup>
+<mx:ViewStack id="mainStack" creationPolicy="all" width="100%" height="90%">
+	<s:NavigatorContent id="mapChatView" label="Map" width="100%" height="100%">
+		<s:layout>
+			<s:VerticalLayout/>
+		</s:layout>
+		<s:VGroup id="chatPane" width="100%" verticalAlign="bottom">
+			<s:Label id="messageArea" width="100%"/>
+			<s:HGroup id="chatPaneInputGroup"><s:TextInput id="chatInput" enter="sendClicked()"/><s:Button click="sendClicked()" label="Send"/></s:HGroup>
+		</s:VGroup>
+		<s:HGroup id="worldPane">
+			<s:VGroup id="mapGroup"></s:VGroup><s:VGroup><local:BlockDropDownList id="blockList" height="60%"/></s:VGroup>
+		</s:HGroup>
+	</s:NavigatorContent>
+	<s:NavigatorContent id="menuView" label="Menu">
+		<s:Label text="chat!"/>
+	</s:NavigatorContent>
+</mx:ViewStack>
+</s:SkinnableContainer>
