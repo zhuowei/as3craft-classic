@@ -8,6 +8,7 @@
 <fx:Script>
 <![CDATA[
 	import mx.controls.Alert;
+	import flash.events.*;
 	public var conn:MinecraftConnection;
 	public var settingsMgr:SettingsManager=new SettingsManager();
 	public function start():void{
@@ -20,6 +21,7 @@
 		conn=new MinecraftConnection(loginForm.host,loginForm.port,loginForm.username,loginForm.key);
 		conn.addEventListener(MinecraftConnection.HANDSHAKE, showLoadingPane);
 		conn.addEventListener(MinecraftConnection.DATA_RECIEVED, updateLoadPercent);
+		conn.addEventListener("disconnect", disconnectHandler);
 		conn.world.addEventListener(World.PLAYER_READY, playerReadyHandler);
 		conn.connect();
 	}
@@ -47,6 +49,11 @@
 	public function showWorldPane():void{
 		//worldView.tileset=settingsMgr.tileset;
 		mainStack.selectedChild=worldPane;
+	}
+	protected function disconnectHandler(e:Event):void{
+		Alert.show("disconnect!");
+		worldView.destroy();
+		mainStack.selectedChild=splashPane;
 	}
 ]]>
 </fx:Script>

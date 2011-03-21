@@ -2,6 +2,8 @@ package {
 	import flash.display.*;
 	import flash.events.*;
 	import flash.geom.*;
+	import flash.text.*;
+	import flash.utils.*;
 	import mx.core.*;
 	/** displays and allows the user to interact with a Minecraft Classic map. */
 	public class MapPane extends UIComponent{
@@ -21,9 +23,11 @@ package {
 		private var lastMouseY:Number;
 		private var beginMouseX:Number;
 		private var beginMouseY:Number;
-		public var layer:int=33;
+		private var _layer:int=33;
 		public var tileset:Tileset;
 		public var blockType:int=0x0e;
+		public var canBuild:Boolean=true;
+		public var playerLabels:Dictionary=new Dictionary();
 		public function MapPane(width:int, height:int, conn:MinecraftConnection){
 			mapWidth=width;
 			mapHeight=height;
@@ -35,10 +39,23 @@ package {
 			addEventListener("mouseMove", mouseMoveHandler);
 			addEventListener("mouseDown", mouseDownHandler);
 			addEventListener("mouseUp", mouseUpHandler);
+			addEventListener("mouseOut", mouseUpHandler);
 			conn.addEventListener("blockChange", function(e:Event):void{trace("changeblk");draw();}, false, 0, true);
+			/*world.addEventListener("playerAdded", function(e:Event):void{rebuildPlayers();}, false, 0, true);
+			world.addEventListener("playerRemoved", function(e:Event):void{rebuildPlayers();drawPlayers();}, false, 0, true);
+			world.addEventListener("playerMove", function(e:Event):void{drawPlayers();}, false, 0, true);
+			rebuildPlayers();*/
 		}
 		private function get tileWidth():int{
 			return tileset.tileWidth;
+		}
+		public function get layer():int{
+			return _layer;
+		}
+		public function set layer(newLayer:int):void{
+			if(newLayer>=0&&newLayer<world.yLength){
+				_layer=newLayer;
+			}
 		}
 		public function get scrollX():int{
 			return _scrollX;
@@ -89,7 +106,7 @@ package {
 			mapData.copyPixels(tileset.data, new Rectangle(tilePos.x, tilePos.y, tileset.tileWidth, tileset.tileWidth), new Point(x,y));
 		}
 		public function draw():void{
-			trace("start drawing");
+			//trace("start drawing");
 			mapData.lock();
 			mapData.fillRect(new Rectangle(0,0,mapData.width, mapData.height), 0x000000);
 			//trace("scroll:"+scrollXBlocks + "  " + scrollZBlocks + " " + layer);
@@ -109,22 +126,60 @@ package {
 					}
 				}
 				if(l!=layer){
-					mapData.colorTransform(new Rectangle(0,0,mapData.width,mapData.height), new ColorTransform(0.5,0.5,0.5));
+					mapData.colorTransform(new Rectangle(0,0,mapData.width,mapData.height), new ColorTransform(0.6,0.6,0.6));
 				}
 			}
 			mapData.unlock();
-			trace("enddraw");
+			//trace("enddraw");
+			//drawPlayers();
 						
 					
+		}/*
+		public function rebuildPlayers():void{
+			trace("rebuildplayer");
+			var p:Player;
+			for(var i:Object in world.player){
+				p=world.player[i];
+				if(playerLabels[p]==null){
+					trace("adding" + p.toString());
+					var tf:TextField=new TextField();
+					tf.text=p.name;
+					//trace("updating p" + p.toString());
+					//tf.x=(p.x*tileWidth)-scrollX;
+					//tf.y=(p.z*tileWidth)-scrollY;
+					addChild(tf);
+					playerLabels[p]=tf;
+				}
+			}
+			for(var z:Object in playerLabels){
+				p=z as Player;
+				if(world.player[p.id]==null){
+					trace("removing" + p.toString());
+					var tf:TextField=playerLabels[i];
+					removeChild(tf);
+					delete playerLabels[i];
+				}
+			}
 		}
+					
+		public function drawPlayers():void{
+			trace("drawplayers!" + playerLabels);
+			for(var i:Object in playerLabels){
+				var p:Player = i as Player;
+				trace("updating p" + p.toString());
+				playerLabels[i].x=(p.x*tileWidth)-scrollX;
+				playerLabels[i].y=(p.z*tileWidth)-scrollY;
+			}
+		}*/
+				
 		public function pixelXCoordToGrid(x:int):int{
 			return x/tileWidth;
 		}
 		public function mouseMoveHandler(e:MouseEvent):void{
-			if(e.buttonDown){
-				trace("scroll" + " " + e.localX +" from " + lastMouseX + " " + (e.localX - lastMouseX) + "," + (e.localY - lastMouseY));
-				scrollX-=(e.localX - lastMouseX)*2;
-				scrollY-=(e.localY - lastMouseY)*2;
+			if(isMouseDown){
+				//trace("scroll" + " " + e.localX +" from " + lastMouseX + " " + (e.localX - lastMouseX) + "," + (e.localY - lastMouseY));
+				scrollX-=(e.localX - lastMouseX);
+				scrollY-=(e.localY - lastMouseY);
 				lastMouseX=e.localX;
 				lastMouseY=e.localY;
 				moved=true;
@@ -133,6 +188,7 @@ package {
 					world.curplayer.y=layer;
 					world.curplayer.z=scrollZBlocks + (mapWidthBlocks/2);
 					conn.sendPlayerPosition();
+					//drawPlayers();
 				}
 				draw();
 			}
@@ -150,10 +206,55 @@ package {
 			isMouseDown=false;
 			if(Math.abs(beginMouseX-e.localX)<(tileWidth/4) && Math.abs(beginMouseY-e.localY)<(tileWidth/4)){
 				trace("place block");
-				conn.setBlock(int((scrollX+e.localX)/32), layer, int((scrollY+e.localY)/32), blockType);
+				//conn.setBlock(int((scrollX+e.localX)/32), layer, int((scrollY+e.localY)/32), blockType);
+				blockClick(int((scrollX+e.localX)/32), layer, int((scrollY+e.localY)/32));
 				draw();
 			}
 			
+		}
+		private function blockClick(x:int, y:int, z:int):Boolean{
+			trace("distance" + Math.abs(world.curplayer.x-x) + "," + Math.abs(world.curplayer.y-y) + "," + Math.abs(world.curplayer.z-z));
+			if(!canBuild){
+				return false;
+			}
+			if(Math.abs(world.curplayer.x-x)>6||Math.abs(world.curplayer.y-y)>6||Math.abs(world.curplayer.z-z)>6){
+				trace("distance cannot build:" + Math.abs(world.curplayer.x-x) + "," + Math.abs(world.curplayer.y-y) + "," + Math.abs(world.curplayer.z-z));
+				return false;
+			}
+			if(world.getBlock(x,y,z)==7 && world.playerType!=0x64){ //bedrock and not op
+				return false;
+			}
+			conn.setBlock(x, y, z, blockType, world.getBlock(x,y,z)!=0);
+			return true;
+		}
+		public function centerToPlayer():void{
+			scrollXBlocks=world.curplayer.x - (mapWidthBlocks/2);
+			scrollZBlocks=world.curplayer.z - (mapHeightBlocks/2);
+			layer=world.curplayer.y;
+			draw();
+		}
+		public function destroy():void{
+			removeEventListener("mouseMove", mouseMoveHandler);
+			removeEventListener("mouseDown", mouseDownHandler);
+			removeEventListener("mouseUp", mouseUpHandler);
+			world=null;
+			conn=null;
+			removeChild(map);
+			mapData=null;
+			map=null;
+			tileset=null;
+		}
+		public function moveUp():void{
+			layer++;
+			world.curplayer.y=layer;
+			conn.sendPlayerPosition();
+			draw();
+		}
+		public function moveDown():void{
+			layer--;
+			world.curplayer.y=layer;
+			conn.sendPlayerPosition();
+			draw();
 		}
 	}
 }

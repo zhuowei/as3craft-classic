@@ -4,6 +4,7 @@
 			   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:local="*" >
 <fx:Script>
 	<![CDATA[
+		import flash.utils.*;
 		public var mapShowing:Boolean=false;
 		public var conn:MinecraftConnection;
 		public var mapPane:MapPane;
@@ -11,12 +12,16 @@
 		[Embed(source="terrain.png")]
 		private var tileEmbed:Class;
 		public var tileset:Tileset= new Tileset((new tileEmbed() as Bitmap).bitmapData);
+		private var coordTimer:uint;
 		public function start():void{
 			conn.addEventListener(ChatEvent.RECIEVED, chatRecieved);
-			messageArea.text="\n\n\n\n\n\n\n\n\n\n\n\n\n";
+			messageArea.text="\n\n\n\n\n\n";
+			if(!coordTimer){
+				setInterval(displayCoords, 1000);
+			}
 			//messageArea.height=chatPane.height - chatPaneInputGroup.height;
 			if(!mapPane){
-				mapPane=new MapPane(640,480,conn);
+				mapPane=new MapPane(tileset.tileWidth*14,tileset.tileWidth*14,conn);
 				mapPane.tileset=tileset;
 				trace("tileset: " +tileset);
 				for(var i:Object in mapPane.tileset){
@@ -24,34 +29,37 @@
 				}
 				mapGroup.addElement(mapPane);
 			}
+			mapPane.centerToPlayer();
 			
 		}
 		public function destroy():void{
+			clearInterval(coordTimer);
+			coordTimer=null;
 			conn.removeEventListener(ChatEvent.RECIEVED, chatRecieved);
+			mapPane.destroy();
+			mapGroup.removeElement(mapPane);
+			mapPane=null;
 		}
-		public function chatRecieved(e:ChatEvent):void{
+		protected function chatRecieved(e:ChatEvent):void{
 			messageArea.text=messageArea.text.slice(messageArea.text.indexOf("\n")+1).concat(removeColor(e.message)+"\n");
 			//messageArea.text+=e.message+"\n";
 		}
-		public function showMap():void{
-			mainStack.selectedChild=mapChatView;
-			chatPane.height=chatInput.height;
-			worldPane.percentHeight=1;
+		public function displayCoords():void{
+			xLabel.text="x: " + conn.world.curplayer.x;
+			yLabel.text="y: " + conn.world.curplayer.y;
+			zLabel.text="z: " + conn.world.curplayer.z;
 		}
-		public function showChat():void{
-			mainStack.selectedChild=mapChatView;
-			chatPane.height=chatPane.measuredHeight;
-			worldPane.height=mapChatView.height-chatPane.height;
-		}
-		public function showMenu():void{
-			mainStack.selectedChild=menuView;
-		}
-		public function sendClicked():void{
+		protected function sendClicked():void{
 			conn.sendMessage(chatInput.text);
 			chatInput.text="";
 		}
-		private function removeColor(str:String):String{
+		public static function removeColor(str:String):String{
 			return str.replace(/&./g, "");
+		}
+		protected function blockListChange():void{
+			if(mapPane){
+				mapPane.blockType=blockList.selectedItem.type;
+			}
 		}
 ]]>
 </fx:Script>
@@ -59,22 +67,22 @@
 	<s:VerticalLayout/>
 </s:layout>
 <!--<s:TabBar id="viewBar" dataProvider="{mainStack}"/>-->
-<s:HGroup depth="10"><s:Button label="Map" click="showMap()"/><s:Button label="Chat" click="showChat()"/><s:Button label="Menu" click="showMenu()"/></s:HGroup>
-<mx:ViewStack id="mainStack" creationPolicy="all" width="100%" height="90%">
-	<s:NavigatorContent id="mapChatView" label="Map" width="100%" height="100%">
-		<s:layout>
-			<s:VerticalLayout/>
-		</s:layout>
+<s:HGroup><s:Button label="disconnect" click="if(conn){conn.disconnect()}"/></s:HGroup>
+<s:VGroup height="90%">
 		<s:VGroup id="chatPane" width="100%" verticalAlign="bottom">
 			<s:Label id="messageArea" width="100%"/>
-			<s:HGroup id="chatPaneInputGroup"><s:TextInput id="chatInput" enter="sendClicked()"/><s:Button click="sendClicked()" label="Send"/></s:HGroup>
+			<s:HGroup id="chatPaneInputGroup"><s:TextInput id="chatInput" enter="sendClicked()" width="80%"/><s:Button click="sendClicked()" label="Send"/></s:HGroup>
 		</s:VGroup>
 		<s:HGroup id="worldPane">
-			<s:VGroup id="mapGroup"></s:VGroup><s:VGroup><local:BlockDropDownList id="blockList" height="60%"/></s:VGroup>
+			<s:VGroup id="mapGroup"></s:VGroup>
+			<s:VGroup>
+				<s:Label id="xLabel"/>
+				<s:Label id="yLabel"/>
+				<s:Label id="zLabel"/>
+				<s:Button id="upButton" label="up" click="if(mapPane){mapPane.moveUp();}"/>
+				<s:Button id="downButton" label="down" click="if(mapPane){mapPane.moveDown();}"/>
+				<local:BlockDropDownList id="blockList" height="200" change="blockListChange()"/>
+			</s:VGroup>
 		</s:HGroup>
-	</s:NavigatorContent>
-	<s:NavigatorContent id="menuView" label="Menu">
-		<s:Label text="chat!"/>
-	</s:NavigatorContent>
-</mx:ViewStack>
+</s:VGroup>
 </s:SkinnableContainer>

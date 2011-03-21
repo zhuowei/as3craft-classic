@@ -4,9 +4,7 @@ package {
 	import flash.events.*;
 	public class SettingsManager{
 		public var tilesetURL:String="terrain.png";
-		[Embed(source="terrain.png")]
-		private var tileEmbed:Class;
-		public var tileset:Tileset= new Tileset((new tileEmbed() as Bitmap).bitmapData);
+
 		public function loadTileset():void{/*
 			trace("loading");
 			var l:Loader=new Loader();

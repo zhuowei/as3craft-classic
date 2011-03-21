@@ -5,12 +5,12 @@ package {
 	/** A representation of a Minecraft World. */
 	public class World extends EventDispatcher{
 		public static var PLAYER_READY:String="playerReady";
-		public var player:Object=new Object();	//a map containing players
+		public var player:Dictionary=new Dictionary();	//a map containing players
 		public var xLength:int;
 		public var yLength:int;
 		public var zLength:int;
 		public var map:ByteArray=new ByteArray();
-		public var playertype:int=0;
+		public var playerType:int=0;
 		public var isReady:Boolean=false;
 		private var gzip:GZIPBytesEncoder = new GZIPBytesEncoder();
 		public function addMap(data:ByteArray):void{
@@ -82,6 +82,7 @@ package {
 				playertomove.pitch=pitch;
 			}
 			trace("moveto" + player[id].toString());
+			dispatchEvent(new Event("playerMove"));
 		}
 		public function movePlayer(id:int, x:Number, y:Number, z:Number):void{
 			movePlayerTo(id,player[id].x+x, player[id].y+y, player[id].z+z, player[id].yaw, player[id].pitch);
@@ -94,6 +95,7 @@ package {
 		}
 		public function removePlayer(id:int):void{
 			player[id]=null;
+			dispatchEvent(new Event("playerRemove"));
 		}
 
 

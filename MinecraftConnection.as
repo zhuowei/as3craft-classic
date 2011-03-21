@@ -7,7 +7,9 @@ package {
 	public class MinecraftConnection extends EventDispatcher{
 		public static var DATA_RECIEVED:String="dataRecieved";
 		public static var HANDSHAKE:String="handshake";
+		/** the socket that this MinecraftConnection uses to connect. */
 		public var socket:Socket;
+		/** the minecraft World that this operates on.*/
 		public var world:World;
 		private var url:String;
 		private var port:int;
@@ -22,9 +24,13 @@ package {
 		private var gzipLevel:ByteArray=new ByteArray();
 		//include "minecraftprotocolcodes.as";
 		private var loginSent:Boolean=false;
+		private var playerPositionTimer:uint;
+
+		/** the name of the server that this Connection is connected to. */
 		public function get serverName():String{
 			return _serverName;
 		}
+		/** the Message of the Day of the server that this Connection is connected to. */
 		public function get serverMOTD():String{
 			return _serverMOTD;
 		}
@@ -46,7 +52,7 @@ package {
 			socket.connect(url, port);
 		}
 		private function dataRecieveHandler(e:ProgressEvent):void{
-			trace(e.toString() + e.bytesLoaded);
+			//trace(e.toString() + e.bytesLoaded);
 			socket.readBytes(buffer, buffer.length, socket.bytesAvailable);
 			var continueRead:Boolean=true;
 			var x:int;
@@ -69,7 +75,7 @@ package {
 						trace("2");
 						_serverMOTD=buffer.readUTFBytes(64);
 						trace("3");
-						world.playertype=buffer.readUnsignedByte();
+						world.playerType=buffer.readUnsignedByte();
 						trace("server id done");
 						dispatchEvent(new Event(HANDSHAKE));
 						break;
@@ -97,6 +103,7 @@ package {
 						var mapData:ByteArray=(new GZIPBytesEncoder()).uncompressToByteArray(gzipLevel);
 						world.addMap(mapData);
 						world.ready();
+						playerPositionTimer=setInterval(sendPlayerPosition, 500);
 						break;
 					case 0x06:
 						x=buffer.readShort();
@@ -105,7 +112,7 @@ package {
 						var type:int=buffer.readUnsignedByte();
 						//trace("setblock: " + x + " "  + y +" " + z + " from " + world.getBlock(x,y,z) + " to " + type);
 						world.setBlock(x,y,z,type);
-						trace("blockchange");
+						//trace("blockchange");
 						dispatchEvent(new Event("blockChange"));
 						break;
 					case 0x07:
@@ -164,7 +171,7 @@ package {
 						kickHandler(trimStr(buffer.readUTFBytes(64)));
 						break;
 					case 0x0f:
-						world.playertype=buffer.readUnsignedByte();
+						world.playerType=buffer.readUnsignedByte();
 						break;
 					default:
 						trace("Oh no! unknown packet!!!");
@@ -191,7 +198,8 @@ package {
 			//trace("down dog");
 			
 		}
-		public function sendPlayerID(name:String, key:String):void{
+		/** Sends initial identification for the player.*/
+		private function sendPlayerID(name:String, key:String):void{
 			socket.writeByte(0x00);
 			socket.writeByte(0x07);
 			socket.writeUTFBytes(padOut(name));
@@ -199,7 +207,8 @@ package {
 			socket.writeByte(0x42); //unused
 			socket.flush();
 		}
-		public function sendSetBlock(x:int, y:int, z:int, mode:int, type:int):void{
+		/* sends the setBlock message. */
+		private function sendSetBlock(x:int, y:int, z:int, mode:int, type:int):void{
 			socket.writeByte(0x05);
 			socket.writeShort(x);
 			socket.writeShort(y);
@@ -208,6 +217,7 @@ package {
 			socket.writeByte(type);
 			socket.flush();
 		}
+		/** Sends a chat message. */
 		public function sendMessage(msg:String):void{
 			socket.writeByte(0x0d);
 			socket.writeByte(0xff);//current user
@@ -217,7 +227,7 @@ package {
 		private function connectHandler(e:Event):void{
 			trace("go");
 			sendInitialPackets();
-			setInterval(sendPlayerPosition, 500);
+			
 		}
 		public function sendPlayerPosition():void{
 			if(world.curplayer && world.isReady){
@@ -232,7 +242,7 @@ package {
 				socket.writeByte(world.curplayer.yaw);
 				socket.writeByte(world.curplayer.pitch);
 				socket.flush();
-				trace("sent" + world.curplayer);
+				//trace("sent" + world.curplayer);
 			}
 		}
 		public function setBlock(x:int, y:int, z:int, type:int, isDelete:Boolean=false):void{
@@ -257,13 +267,18 @@ package {
 
 		public function disconnect():void{
 			socket.close();
-			//cleanUp();
+			cleanUp();
 		}
 		public function kickHandler(msg:String):void{
 			trace("kick: " + msg);
 			socket.close();
+			cleanUp();
 		}
 		private function cleanUp():void{
+			dispatchEvent(new Event("disconnect"));
+			if(playerPositionTimer){
+				clearInterval(playerPositionTimer);
+			}
 		}
 		private function trimStr(str:String):String{
 			for(var i:int=0;i<str.length-1;i++){
@@ -274,6 +289,9 @@ package {
 			return str;
 		}
 		private function padOut(str:String):String{
+			if(str.length>64){
+				return str.substr(0,64);
+			}
 			var retval:String="";
 			for(var i:int=0;i<64-str.length;i++){
 				retval=retval.concat(" ");
