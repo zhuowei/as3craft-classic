@@ -254,6 +254,7 @@ package {
 		}
 		private function closeHandler(e:Event):void{
 			trace("socket closed!");
+			dispatchEvent(new DisconnectEvent("disconnect", true, "The socket was closed."));
 			cleanUp();
 		}
 		private function recieveMessageHandler(id:int, msg:String):void{
@@ -266,16 +267,20 @@ package {
 		}
 
 		public function disconnect():void{
+			/*socket.writeByte(0xff);
+			socket.writeUTFBytes(padOut("Disconnecting..."));
+			socket.flush();*/
 			socket.close();
+			dispatchEvent(new DisconnectEvent("disconnect", false));
 			cleanUp();
 		}
 		public function kickHandler(msg:String):void{
-			trace("kick: " + msg);
+			dispatchEvent(new DisconnectEvent("disconnect", true, msg));
 			socket.close();
 			cleanUp();
 		}
 		private function cleanUp():void{
-			dispatchEvent(new Event("disconnect"));
+			//dispatchEvent(new Event("disconnect"));
 			if(playerPositionTimer){
 				clearInterval(playerPositionTimer);
 			}

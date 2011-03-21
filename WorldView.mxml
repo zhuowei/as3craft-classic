@@ -21,7 +21,7 @@
 			}
 			//messageArea.height=chatPane.height - chatPaneInputGroup.height;
 			if(!mapPane){
-				mapPane=new MapPane(tileset.tileWidth*14,tileset.tileWidth*14,conn);
+				mapPane=new MapPane(tileset.tileWidth*12,tileset.tileWidth*12,conn);
 				mapPane.tileset=tileset;
 				trace("tileset: " +tileset);
 				for(var i:Object in mapPane.tileset){

@@ -6,7 +6,9 @@
     <initialWindow> 
         <content>AS3Craft.swf</content> 
         <visible>true</visible> 
-        <width>1024</width> 
-        <height>600</height> 
+        <width>600</width> 
+        <height>1024</height>
+	<autoOrients>true</autoOrients>
+	<aspectRatio>portrait</aspectRatio>
     </initialWindow> 
 </application>

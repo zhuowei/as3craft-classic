@@ -3,7 +3,7 @@
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
 			   xmlns:mx="library://ns.adobe.com/flex/mx"
 			   xmlns:local="*"
-			   minWidth="1024" minHeight="600" width="1024" height="600" applicationComplete="start()" backgroundColor="#ffffff"
+			   minWidth="600" minHeight="600" width="600" height="1024" applicationComplete="start()" backgroundColor="#ffffff"
 			   >
 <fx:Script>
 <![CDATA[
@@ -12,12 +12,17 @@
 	public var conn:MinecraftConnection;
 	public var settingsMgr:SettingsManager=new SettingsManager();
 	public function start():void{
+		this.stage.addEventListener("orientationChange", orientationEventHandler);
 		loginForm.addEventListener("login", loginHandler);
-		trace(splashLabel);
+		//trace(splashLabel);
 		settingsMgr.loadTileset();
 	}
+	protected function orientationEventHandler(e:StageOrientationEvent):void{
+		this.width=this.stage.stageWidth;
+		this.height=this.stage.stageHeight;
+	}
 	public function loginHandler(e:Event):void{
-		Alert.show(loginForm.host + ":" + loginForm.port + ":" + loginForm.username + ":" + loginForm.key);
+		//Alert.show(loginForm.host + ":" + loginForm.port + ":" + loginForm.username + ":" + loginForm.key);
 		conn=new MinecraftConnection(loginForm.host,loginForm.port,loginForm.username,loginForm.key);
 		conn.addEventListener(MinecraftConnection.HANDSHAKE, showLoadingPane);
 		conn.addEventListener(MinecraftConnection.DATA_RECIEVED, updateLoadPercent);
@@ -50,9 +55,11 @@
 		//worldView.tileset=settingsMgr.tileset;
 		mainStack.selectedChild=worldPane;
 	}
-	protected function disconnectHandler(e:Event):void{
-		Alert.show("disconnect!");
+	protected function disconnectHandler(e:DisconnectEvent):void{
 		worldView.destroy();
+		if(e.kick){
+			Alert.show("Disconnected: " + e.reason);
+		}
 		mainStack.selectedChild=splashPane;
 	}
 ]]>
@@ -63,9 +70,9 @@
 		<s:layout>
 			<s:VerticalLayout/>
 		</s:layout>
-		<s:Label text="AS3Craft Classic"/>
-		<s:Label id="splashLabel" text="This is not splash text!"/>
-		<local:LoginForm id="loginForm"/>
+		<s:Label text="AS3Craft Classic" fontSize="40"/>
+		<s:HGroup><mx:Spacer width="100%"/><s:Label id="splashLabel" text="This is not splash text!"/></s:HGroup>
+		<local:LoginForm id="loginForm" width="80%"/>
 	</s:NavigatorContent>
 	<s:NavigatorContent id="loadingPane" width="100%" height="100%" creationPolicy="all">
 		<s:layout>
@@ -78,7 +85,6 @@
 			direction="right" mode="manual" width="100%"/>
 	</s:NavigatorContent>
 	<s:NavigatorContent id="worldPane" width="100%" height="100%" creationPolicy="all">
-		<s:Label text="This is the world pane."/>
 		<local:WorldView id="worldView" width="100%" height="100%"/>
 	</s:NavigatorContent>
 </mx:ViewStack>
