@@ -5,19 +5,79 @@
 <fx:Script>
 	<![CDATA[
 		import flash.events.*;
+		import flash.media.*;
+		import flash.net.*;
+		import flash.geom.*;
+		import mx.controls.Alert;
 		public var host:String;
 		public var port:int;
 		public var username:String;
 		public var key:String;
-		protected function mineLogin():void{
+		private var mcWebView:StageWebView;
+		public static const WEBVIEW_HEIGHT:Number=400;
+		//public static const WEBVIEW_WIDTH:Number=480;
+		public static const JAVASCRIPT_INJECT_URL:String='javascript:var mcurlnav=function(){var username=document.getElementsByName'+
+			'("username")[0].value;var server=document.getElementsByName("server")[0].value;'+
+			'var port=document.getElementsByName("port")[0].value;var mppass=document.getElementsByName("mppass")[0].value;'+
+			'window.location="mc://"+server+":"+port+"/"+username+"/"+mppass;};mcurlnav();';
+		/** WARNING: STUPID KLUTGE! 
+		* Show a Webview to minecraft.net.
+		*/
+		public function mineLogin():void{
+			mcLoginButton.visible=false;
+			mcLoginWebviewSpacer.width=this.width *0.9;
+			mcLoginWebviewSpacer.height=WEBVIEW_HEIGHT;
+			mcWebView=new StageWebView();
+			mcWebView.addEventListener("locationChanging", function(e:LocationChangeEvent):void{
+					trace(e.location.substr(0,5), e.location.substr(0,11));
+					if(e.location.substr(0,5)=="mc://"){
+						trace("got mc url: " + e.location);
+						e.preventDefault();
+						mcWebView.stage=null;
+						mcWebView.dispose();
+						mcWebView=null;
+						mcLoginWebviewSpacer.width=0;
+						mcLoginWebviewSpacer.height=0;
+						mcLoginButton.visible=true;
+						mcURLLogin(e.location);
+						return;
+					}
+					if(e.location.substr(0,11)=="javascript:"){
+						return;
+					}
+					if(e.location.indexOf("minecraft.net")<0){
+						e.preventDefault();
+						Alert.show("Please do not navigate outside of Minecraft.net. You'll hurt my feelings.");
+						return;
+					}
+
+				});
+			mcWebView.addEventListener("locationChange", function(e:LocationChangeEvent):void{
+					if(e.location.indexOf("minecraft.net/play.jsp")!=-1){
+						trace("found server login");
+						setTimeout(mcWebpageLoad, 500); //let it load for a bit
+					}
+			});
+			mcWebView.stage=this.stage;
+			var webviewPoint:Point=mcLoginWebviewSpacer.contentToGlobal(new Point(0,0));
+			mcWebView.viewPort=new Rectangle(webviewPoint.x, webviewPoint.y, mcLoginWebviewSpacer.width, WEBVIEW_HEIGHT);
+			mcWebView.loadURL("https://www.minecraft.net/login.jsp");
+		}
+		/** injects the mc:// url maker into the StageWebView. */
+		protected function mcWebpageLoad():void{
+			mcWebView.loadURL(JAVASCRIPT_INJECT_URL);
 		}
 		protected function mcURLLogin(url:String):void{
-			var urlobj:Object;
+			var urlobj:MCURL;
 			try{
-				urlobj=MCURLDecoder.decode(url);
+				urlobj=MCURL.decode(url);
 				dispatchLogin(urlobj.host, urlobj.port, urlobj.username, urlobj.key);
 			}
 			catch(e:URIError){
+				Alert.show("The URL you have entered is not a valid Minecraft Direct Connect URL.");
+			}
+			catch(e:Error){
+				Alert.show("The URL you have entered cannot be parsed. \n" + e.toString());
 			}
 		}
 		private function dispatchLogin(host:String, port:int, username:String, key:String):void{
@@ -32,15 +92,18 @@
 <s:layout>
 	<s:VerticalLayout/>
 </s:layout>
+<s:VGroup id="loginPane">
 <!--<s:Label text="Minecraft.net login: "/>
 <s:HGroup>
 	<s:Label text="Username: "/><s:TextInput id="usernameInput"/>
 </s:HGroup>
 <s:HGroup>
 	<s:Label text="Password: "/><s:TextInput id="passwordInput" displayAsPassword="true"/>
-</s:HGroup>
-<s:Button label="Login" click="mineLogin()"/>-->
-<s:Label text="Enter a Minecraft Direct Connect url: "/>
+</s:HGroup>-->
+<mx:Spacer id="mcLoginWebviewSpacer" width="0" height="0"/>
+<s:Button id="mcLoginButton" click="mineLogin()" label="Login to Minecraft.net"/>
+</s:VGroup>
+<s:Label text="Or enter a Minecraft Direct Connect url: "/>
 <s:HGroup>
 	<s:TextInput id="mcURLInput" widthInChars="35"/><s:Button label="Go!" click="mcURLLogin(mcURLInput.text)"/>
 </s:HGroup>

@@ -1,0 +1,7 @@
+javascript:var mcurlnav=function(){
+	var username=document.getElementsByName("username")[0].value;
+	var server=document.getElementsByName("server")[0].value;
+	var port=document.getElementsByName("port")[0].value;
+	var mppass=document.getElementsByName("mppass")[0].value;
+	window.location="mc://"+server+":"+port+"/"+username+"/"+mppass;
+};mcurlnav();

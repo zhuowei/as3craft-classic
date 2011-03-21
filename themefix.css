@@ -1,0 +1,6 @@
+@namespace "library://ns.adobe.com/flex/spark";
+
+global{
+	fontSize: 18;
+    focusThickness: 3;
+}
