@@ -17,7 +17,7 @@
 			conn.addEventListener(ChatEvent.RECIEVED, chatRecieved);
 			messageArea.text="\n\n\n\n\n\n";
 			if(!coordTimer){
-				setInterval(displayCoords, 1000);
+				setInterval(displayCoords, 800);
 			}
 			//messageArea.height=chatPane.height - chatPaneInputGroup.height;
 			if(!mapPane){
@@ -30,6 +30,11 @@
 				mapGroup.addElement(mapPane);
 			}
 			mapPane.centerToPlayer();
+			mapPane.getBuildPermission();
+			blockList.visible=mapPane.canBuild;
+			cantBuildLabel.visible=!mapPane.canBuild;
+			serverNameLabel.text=conn.serverName;
+			serverMOTDLabel.text=conn.serverMOTD;
 			
 		}
 		public function destroy():void{
@@ -67,7 +72,7 @@
 	<s:VerticalLayout/>
 </s:layout>
 <!--<s:TabBar id="viewBar" dataProvider="{mainStack}"/>-->
-<s:HGroup><s:Button label="disconnect" click="if(conn){conn.disconnect()}"/></s:HGroup>
+<s:HGroup><s:Button label="Disconnect" click="if(conn){conn.disconnect()}"/><s:Label id="serverNameLabel" fontSize="12"/><s:Label id="serverMOTDLabel" fontSize="11"/></s:HGroup>
 <s:VGroup height="90%">
 		<s:VGroup id="chatPane" width="100%" verticalAlign="bottom">
 			<s:Label id="messageArea" width="100%"/>
@@ -82,6 +87,7 @@
 				<s:Button id="upButton" label="up" click="if(mapPane){mapPane.moveUp();}"/>
 				<s:Button id="downButton" label="down" click="if(mapPane){mapPane.moveDown();}"/>
 				<local:BlockDropDownList id="blockList" height="200" change="blockListChange()"/>
+				<s:Label id="cantBuildLabel" text="Building is disabled." visible="false"/>
 			</s:VGroup>
 		</s:HGroup>
 </s:VGroup>

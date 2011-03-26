@@ -28,11 +28,11 @@ package {
 
 		/** the name of the server that this Connection is connected to. */
 		public function get serverName():String{
-			return _serverName;
+			return trimStr(_serverName);
 		}
 		/** the Message of the Day of the server that this Connection is connected to. */
 		public function get serverMOTD():String{
-			return _serverMOTD;
+			return trimStr(_serverMOTD);
 		}
 		public function MinecraftConnection(url:String, port:int, username:String, loginKey: String){
 			this.username=username;

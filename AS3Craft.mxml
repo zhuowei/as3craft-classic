@@ -29,11 +29,15 @@
 		conn.addEventListener("disconnect", disconnectHandler);
 		conn.world.addEventListener(World.PLAYER_READY, playerReadyHandler);
 		conn.connect();
+		conn.socket.addEventListener("ioError", ioErrorHandler);
 	}
 	public function playerReadyHandler(e:Event):void{
 		worldView.conn=conn;
 		worldView.start();
 		showWorldPane();
+	}
+	public function ioErrorHandler(e:IOErrorEvent):void{
+		Alert.show("Error during connection: " + e.text + "\nPlease verify the address and try again.");
 	}
 	public function updateLoadPercent(e:ProgressEvent):void{
 		//trace("update" + e);

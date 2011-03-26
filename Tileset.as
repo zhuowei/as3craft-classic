@@ -11,10 +11,22 @@ package {
 		public function Tileset(data:BitmapData){
 			this.data=data;
 			this.tileWidth = data.width/16;
+			colorize();
 		}
 		/* look up the location of the block in the tileset. */
 		public function lookup(type:int):Point{
-			return new Point(blocks[type].x * tileWidth, blocks[type].y * tileWidth);
+			if(type>=0&&type<blocks.length){
+				return new Point(blocks[type].x * tileWidth, blocks[type].y * tileWidth);
+			}
+			return blocks[1];//Error handler block of doom!
+		}
+		/** Colourize the grass and the leaves block from Beta tilesets.*/
+		private function colorize():void{
+			var bColor:ColorTransform=new ColorTransform(0,1,0);
+			var bPoint:Point=lookup(2);
+			data.colorTransform(new Rectangle(bPoint.x, bPoint.y, tileWidth, tileWidth), bColor);
+			bPoint=lookup(18); //leaves
+			data.colorTransform(new Rectangle(bPoint.x, bPoint.y, tileWidth, tileWidth), bColor);
 		}
 	}
 }

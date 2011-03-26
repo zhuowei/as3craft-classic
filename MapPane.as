@@ -27,7 +27,10 @@ package {
 		public var tileset:Tileset;
 		public var blockType:int=0x0e;
 		public var canBuild:Boolean=true;
-		public var playerLabels:Dictionary=new Dictionary();
+//		public var playerLabels:Dictionary=new Dictionary();
+		public var motdOptions:MOTDOptions;
+
+
 		public function MapPane(width:int, height:int, conn:MinecraftConnection){
 			mapWidth=width;
 			mapHeight=height;
@@ -35,6 +38,7 @@ package {
 			this.height=height;
 			this.conn=conn;
 			world=conn.world;
+			getBuildPermission();
 			addMapImage();
 			addEventListener("mouseMove", mouseMoveHandler);
 			addEventListener("mouseDown", mouseDownHandler);
@@ -64,14 +68,30 @@ package {
 			if(val>=0 && val <=(world.xLength * tileset.tileWidth)-mapWidth){
 				_scrollX=val;
 			}
+			else{
+				if(val<0){
+					_scrollX=0;
+				}
+				if(val>(world.xLength * tileset.tileWidth)-mapWidth){
+					_scrollX=(world.xLength * tileset.tileWidth)-mapWidth;
+				}
+			}
 			//draw();
 		}
 		public function get scrollY():int{
 			return _scrollY;
 		}
 		public function set scrollY(val:int):void{
-			if(val>0 && val<=(world.zLength * tileset.tileWidth)-mapHeight){
+			if(val>=0 && val<=(world.zLength * tileset.tileWidth)-mapHeight){
 				_scrollY=val;
+			}
+			else{
+				if(val<0){
+					_scrollY=0;
+				}
+				if(val>(world.zLength * tileset.tileWidth)-mapHeight){
+					_scrollY=(world.zLength * tileset.tileWidth)-mapHeight;
+				}
 			}
 			//draw();
 		}
@@ -94,7 +114,11 @@ package {
 		public function get mapHeightBlocks():int{
 			return mapHeight/32;
 		}
-
+		public function getBuildPermission():void{
+			motdOptions=MOTDOptions.parse(conn.serverMOTD, world.playerType==0x64);
+			trace(motdOptions.toString());
+			canBuild=motdOptions.fly&&motdOptions.jump&&motdOptions.noclip;
+		}
 		public function addMapImage():void{
 			mapData=new BitmapData(mapWidth, mapHeight, false);
 			map=new Bitmap(mapData);
