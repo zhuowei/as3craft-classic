@@ -192,6 +192,9 @@ package {
 			}
 			catch(e:Error){
 				trace("bad thing: Error" + e);
+				if(e.getStackTrace()){
+					trace(e.getStackTrace());
+				}
 				continueRead=false;
 			}
 		    }
@@ -281,6 +284,7 @@ package {
 		}
 		private function cleanUp():void{
 			//dispatchEvent(new Event("disconnect"));
+			trace("cleanUp");
 			if(playerPositionTimer){
 				clearInterval(playerPositionTimer);
 			}

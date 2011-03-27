@@ -8,14 +8,21 @@
 <fx:Script>
 <![CDATA[
 	import mx.controls.Alert;
+	import mx.managers.PopUpManager;
 	import flash.events.*;
 	public var conn:MinecraftConnection;
-	public var settingsMgr:SettingsManager=new SettingsManager();
+	public var settingsMgr:SettingsManager=SettingsManager.manager;
+	public var settingsWindow:SettingsWindow;
 	public function start():void{
 		this.stage.addEventListener("orientationChange", orientationEventHandler);
 		loginForm.addEventListener("login", loginHandler);
 		//trace(splashLabel);
-		settingsMgr.loadTileset();
+		if(settingsMgr.tilesetURL!=null){
+			settingsMgr.loadTileset();
+		}
+		else{
+			launchSettings();
+		}
 	}
 	protected function orientationEventHandler(e:StageOrientationEvent):void{
 		this.width=this.stage.stageWidth;
@@ -33,6 +40,11 @@
 	}
 	public function playerReadyHandler(e:Event):void{
 		worldView.conn=conn;
+		if(settingsMgr.tileset==null){
+			Alert.show("The tileset did not load completely. \nPerhaps the tileset that you have chosen in the Settings menu have been deleted or moved?");
+			return;
+		}
+		worldView.tileset=settingsMgr.tileset;
 		worldView.start();
 		showWorldPane();
 	}
@@ -56,7 +68,7 @@
 		//mainStack.selectedChild=loadingPane;
 	}
 	public function showWorldPane():void{
-		//worldView.tileset=settingsMgr.tileset;
+
 		mainStack.selectedChild=worldPane;
 	}
 	protected function disconnectHandler(e:DisconnectEvent):void{
@@ -65,6 +77,12 @@
 			Alert.show("Disconnected: " + e.reason);
 		}
 		mainStack.selectedChild=splashPane;
+	}
+	public function launchSettings():void{
+		if(!settingsWindow){
+			settingsWindow=new SettingsWindow();
+		}
+		PopUpManager.addPopUp(settingsWindow, this, true);
 	}
 ]]>
 </fx:Script>
@@ -77,6 +95,7 @@
 		<s:Label text="AS3Craft Classic" fontSize="40"/>
 		<s:HGroup><mx:Spacer width="100%"/><s:Label id="splashLabel" text="This is not splash text!"/></s:HGroup>
 		<local:LoginForm id="loginForm" width="80%"/>
+		<s:Button id="settingsButton" label="Settings..." click="launchSettings()"/>
 	</s:NavigatorContent>
 	<s:NavigatorContent id="loadingPane" width="100%" height="100%" creationPolicy="all">
 		<s:layout>

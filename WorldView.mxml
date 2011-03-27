@@ -8,10 +8,10 @@
 		public var mapShowing:Boolean=false;
 		public var conn:MinecraftConnection;
 		public var mapPane:MapPane;
-		//public var tileset:Tileset;
-		[Embed(source="terrain.png")]
-		private var tileEmbed:Class;
-		public var tileset:Tileset= new Tileset((new tileEmbed() as Bitmap).bitmapData);
+		public var tileset:Tileset;
+		//[Embed(source="terrain.png")]
+		//private var tileEmbed:Class;
+		//public var tileset:Tileset= new Tileset((new tileEmbed() as Bitmap).bitmapData);
 		private var coordTimer:uint;
 		public function start():void{
 			conn.addEventListener(ChatEvent.RECIEVED, chatRecieved);

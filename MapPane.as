@@ -109,10 +109,10 @@ package {
 			scrollY=val*tileWidth;
 		}
 		public function get mapWidthBlocks():int{
-			return mapWidth/32;
+			return mapWidth/tileWidth;
 		}
 		public function get mapHeightBlocks():int{
-			return mapHeight/32;
+			return mapHeight/tileWidth;
 		}
 		public function getBuildPermission():void{
 			motdOptions=MOTDOptions.parse(conn.serverMOTD, world.playerType==0x64);
@@ -231,7 +231,7 @@ package {
 			if(Math.abs(beginMouseX-e.localX)<(tileWidth/4) && Math.abs(beginMouseY-e.localY)<(tileWidth/4)){
 				trace("place block");
 				//conn.setBlock(int((scrollX+e.localX)/32), layer, int((scrollY+e.localY)/32), blockType);
-				blockClick(int((scrollX+e.localX)/32), layer, int((scrollY+e.localY)/32));
+				blockClick(int((scrollX+e.localX)/tileWidth), layer, int((scrollY+e.localY)/tileWidth));
 				draw();
 			}
 			
