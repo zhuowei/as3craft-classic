@@ -64,7 +64,7 @@ package {
 			}
 		}
 		public function movePlayerTo(id:int, x:Number, y:Number, z:Number, yaw:int, pitch:int):void{
-			trace("moveplayerto: " + id + x + y + z + yaw + pitch);
+			trace("moveplayerto: " + id + " : " + x + y + z + yaw + pitch);
 			var playertomove:Player=player[id];
 			if(x){
 				playertomove.x=x;
@@ -85,6 +85,8 @@ package {
 			dispatchEvent(new Event("playerMove"));
 		}
 		public function movePlayer(id:int, x:Number, y:Number, z:Number):void{
+			trace("MovePlayer: " + id);
+			trace("Player: " + player[id]);
 			movePlayerTo(id,player[id].x+x, player[id].y+y, player[id].z+z, player[id].yaw, player[id].pitch);
 		}
 		public function rotatePlayer(id:int, yaw:int, pitch:int):void{

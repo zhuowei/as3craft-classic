@@ -55,7 +55,7 @@
 			mcWebView.addEventListener("locationChange", function(e:LocationChangeEvent):void{
 					if(e.location.indexOf("minecraft.net/play.jsp")!=-1){
 						trace("found server login");
-						setTimeout(mcWebpageLoad, 500); //let it load for a bit
+						setTimeout(function(){mcWebpageLoad();}, 500); //let it load for a bit
 					}
 			});
 			mcWebView.stage=this.stage;

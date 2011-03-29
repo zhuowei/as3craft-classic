@@ -192,9 +192,7 @@ package {
 			}
 			catch(e:Error){
 				trace("bad thing: Error" + e);
-				if(e.getStackTrace()){
-					trace(e.getStackTrace());
-				}
+				trace(e.getStackTrace());
 				continueRead=false;
 			}
 		    }
