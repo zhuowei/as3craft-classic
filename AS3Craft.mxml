@@ -13,6 +13,7 @@
 	public var conn:MinecraftConnection;
 	public var settingsMgr:SettingsManager=SettingsManager.manager;
 	public var settingsWindow:SettingsWindow;
+	public var aboutWindow:AboutWindow;
 	public function start():void{
 		this.stage.addEventListener("orientationChange", orientationEventHandler);
 		loginForm.addEventListener("login", loginHandler);
@@ -84,6 +85,14 @@
 		}
 		PopUpManager.addPopUp(settingsWindow, this, true);
 	}
+	public function launchAbout():void{
+		if(!aboutWindow){
+			aboutWindow=new AboutWindow();
+		}
+		aboutWindow.width=this.width*0.8;
+		aboutWindow.height=this.height*0.8;
+		PopUpManager.addPopUp(aboutWindow,this,true);
+	}
 ]]>
 </fx:Script>
 <!--<local:LoginForm id="loginForm"/>-->
@@ -95,7 +104,9 @@
 		<s:Label text="AS3Craft Classic" fontSize="40"/>
 		<s:HGroup><mx:Spacer width="100%"/><s:Label id="splashLabel" text="This is not splash text!"/></s:HGroup>
 		<local:LoginForm id="loginForm" width="80%"/>
-		<s:Button id="settingsButton" label="Settings..." click="launchSettings()"/>
+		<s:HGroup><s:Button id="settingsButton" label="Settings..." click="launchSettings()"/>
+			<s:Button id="aboutButton" label="About..." click="launchAbout()"/>
+		</s:HGroup>
 	</s:NavigatorContent>
 	<s:NavigatorContent id="loadingPane" width="100%" height="100%" creationPolicy="all">
 		<s:layout>

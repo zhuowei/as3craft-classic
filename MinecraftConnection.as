@@ -24,7 +24,7 @@ package {
 		private var gzipLevel:ByteArray=new ByteArray();
 		//include "minecraftprotocolcodes.as";
 		private var loginSent:Boolean=false;
-		private var playerPositionTimer:uint;
+		private var playerPositionTimer:Timer;
 
 		/** the name of the server that this Connection is connected to. */
 		public function get serverName():String{
@@ -103,7 +103,9 @@ package {
 						var mapData:ByteArray=(new GZIPBytesEncoder()).uncompressToByteArray(gzipLevel);
 						world.addMap(mapData);
 						world.ready();
-						playerPositionTimer=setInterval(sendPlayerPosition, 500);
+						playerPositionTimer=new Timer(500);
+						playerPositionTimer.addEventListener("timer", function(e:Event):void{sendPlayerPosition();});
+						playerPositionTimer.start();
 						break;
 					case 0x06:
 						x=buffer.readShort();
@@ -283,8 +285,8 @@ package {
 		private function cleanUp():void{
 			//dispatchEvent(new Event("disconnect"));
 			trace("cleanUp");
-			if(playerPositionTimer){
-				clearInterval(playerPositionTimer);
+			if(playerPositionTimer!=null){
+				playerPositionTimer.stop();
 			}
 		}
 		private function trimStr(str:String):String{

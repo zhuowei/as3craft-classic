@@ -1,0 +1,11 @@
+<qnx>
+  <initialWindow>
+    <systemChrome>none</systemChrome>
+    <transparent>false</transparent>
+  </initialWindow>
+  <publisher>Yuqing Wang</publisher>
+  <category>core.games</category>
+  <icon>
+  	<image>icon.png</image>
+  </icon>
+</qnx>

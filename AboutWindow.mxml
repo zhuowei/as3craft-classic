@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" title="About" close="closeHandler()">
+<fx:Script>
+<![CDATA[
+	import mx.managers.PopUpManager;
+	include "buildTime.as";	
+	protected var licenseString:String="This program is free software: you can redistribute it and/or "+
+		"modify it under the terms of the GNU General Public License as published by "+
+		"the Free Software Foundation, either version 3 of the License, or"+
+		"(at your option) any later version.\n"+
+		"This program is distributed in the hope that it will be useful, "+
+		"but WITHOUT ANY WARRANTY; without even the implied warranty of "+
+		"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the "+
+		"GNU General Public License for more details.";
+	protected var licenseString2:String="This product uses the FZip Libaray.\n Contains code from MobileOpenCraft."; 
+	private function closeHandler():void{
+		PopUpManager.removePopUp(this);
+	}
+
+]]>
+</fx:Script>
+<s:layout>
+	<s:VerticalLayout paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20"/>
+</s:layout>
+<s:Label text="AS3Craft Classic" fontSize="40"/>
+<s:Label text="Version 1.0.0"/>
+<s:HGroup><s:Label text="Built on:"/><s:Label text="{buildTime}"/></s:HGroup>
+<s:Label text="http://sites.google.com/site/zhuoweisite/blackberry-apps/as3craft-classic" width="100%"/>
+<s:Scroller width="100%">
+	<s:VGroup>
+		<s:Label text="{licenseString}" width="100%"/>
+		<s:Label text="{licenseString2}" width="100%"/>
+	</s:VGroup>
+</s:Scroller>
+</s:TitleWindow>

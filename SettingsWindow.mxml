@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" title="Settings" close="closeHandler(event)">
+<fx:Script>
+	<![CDATA[
+	import flash.net.*;
+	import flash.filesystem.*;
+	import mx.controls.Alert;
+	import mx.managers.PopUpManager;
+	import deng.fzip.*;
+	protected function browseForTexture():void{
+		var file:File=new File();
+		file.addEventListener("select", fileSelected);
+		file.browseForOpen("Select texture pack or Terrain.png", 
+		[new FileFilter("Minecraft Terrain file","*.png"), new FileFilter("Minecraft Texture pack", "*.zip")]);
+		function fileSelected(e:Event):void{
+			trace("FileSelected");
+			file.removeEventListener("select",fileSelected);
+			trace(file.url.substr(file.url.length-4, 4));
+			switch(file.url.substr(file.url.length-4,4).toLowerCase()){
+				case ".png":
+					SettingsManager.manager.tilesetURL=file.url;
+					SettingsManager.manager.loadTileset();
+					break;
+				case ".zip":
+					if(!parseMinecraftZip(file)){
+						Alert.show("Error while loading Minecraft Texture Pack.");
+					}
+					SettingsManager.manager.loadTileset();
+					break;
+				default:
+					Alert.show("Incorrect file format: " + file.url);
+					break;
+			}
+		}
+	}
+	public function parseMinecraftZip(file:File):Boolean{
+		trace(file);
+		var stream:FileStream=new FileStream();
+		stream.open(file, FileMode.READ);
+		var bytearr:ByteArray=new ByteArray();
+		stream.readBytes(bytearr, 0);
+		var zip:FZip=new FZip();
+		zip.loadBytes(bytearr);
+		var terrainZipFile:FZipFile=zip.getFileByName("terrain.png");
+		if(terrainZipFile==null){
+			return false;
+		}
+		trace(terrainZipFile);
+		var out:FileStream=new FileStream();
+		trace("outfile:");
+		var outfile:File=File.applicationStorageDirectory.resolvePath("terrain.png");
+		trace("start open");
+		out.open(outfile, FileMode.WRITE);
+		trace("open out:");
+		out.writeBytes(terrainZipFile.content);
+		SettingsManager.manager.tilesetURL=outfile.url;
+		return true;
+		
+	}
+	protected function closeHandler(e:Event):void{
+		trace(SettingsManager.manager.tilesetURL);
+		if(SettingsManager.manager.tilesetURL==null){
+			e.preventDefault();
+			Alert.show("Please select a texture pack.");
+		}
+		else{
+			PopUpManager.removePopUp(this);
+		}
+	}
+]]>
+</fx:Script>
+<s:layout>
+	<s:VerticalLayout/>
+</s:layout>
+<s:HGroup>
+<s:Label text="Select a texture pack: "/><s:Button label="Browse..." click="browseForTexture()"/>
+</s:HGroup>
+</s:TitleWindow>
