@@ -11,4 +11,5 @@
   <action>access_internet</action>
   <action>access_shared</action>
   <buildId>2</buildId>
+  <platformVersion>1.0.0.0</platformVersion>
 </qnx>

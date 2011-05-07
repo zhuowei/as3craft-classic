@@ -25,7 +25,7 @@
 	<s:VerticalLayout paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20"/>
 </s:layout>
 <s:Label text="AS3Craft Classic" fontSize="40"/>
-<s:Label text="Version 1.0.0"/>
+<s:Label text="Version 1.1.0"/>
 <s:HGroup><s:Label text="Built on:"/><s:Label text="{buildTime}"/></s:HGroup>
 <s:Label text="http://sites.google.com/site/zhuoweisite/blackberry-apps/as3craft-classic" width="100%"/>
 <s:Scroller width="100%">

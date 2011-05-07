@@ -77,4 +77,5 @@
 <s:HGroup>
 <s:Label text="Select a texture pack: "/><s:Button label="Browse..." click="browseForTexture()"/>
 </s:HGroup>
+<s:Label text="Select a terrain.png file extracted from a Minecraft Beta texture pack." fontSize="10"/>
 </s:TitleWindow>

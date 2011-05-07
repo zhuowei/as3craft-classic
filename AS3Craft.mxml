@@ -102,7 +102,7 @@
 			<s:VerticalLayout/>
 		</s:layout>
 		<s:Label text="AS3Craft Classic" fontSize="40"/>
-		<s:HGroup><mx:Spacer width="100%"/><s:Label id="splashLabel" text="This is not splash text!"/></s:HGroup>
+		<s:HGroup><mx:Spacer width="100%"/><s:Label id="splashLabel" text="10% less bugs!"/></s:HGroup>
 		<local:LoginForm id="loginForm" width="80%"/>
 		<s:HGroup><s:Button id="settingsButton" label="Settings..." click="launchSettings()"/>
 			<s:Button id="aboutButton" label="About..." click="launchAbout()"/>
@@ -115,7 +115,7 @@
 		<s:Label text="Loading..."/>
 		<s:Label id="serverNameLabel"/>
 		<s:Label id="serverMOTDLabel"/>
-		<mx:ProgressBar id="serverLoadingBar" labelPlacement="bottom" minimum="0" visible="true" maximum="100" label="CurrentProgress" 
+		<mx:ProgressBar id="serverLoadingBar" labelPlacement="bottom" minimum="0" visible="true" maximum="100" label="Loading terrain..." 
 			direction="right" mode="manual" width="100%"/>
 	</s:NavigatorContent>
 	<s:NavigatorContent id="worldPane" width="100%" height="100%" creationPolicy="all">
