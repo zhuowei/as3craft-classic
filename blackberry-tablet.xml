@@ -3,9 +3,12 @@
     <systemChrome>none</systemChrome>
     <transparent>false</transparent>
   </initialWindow>
-  <publisher>Yuqing Wang</publisher>
+  <author>Yuqing Wang</author>
   <category>core.games</category>
   <icon>
   	<image>icon.png</image>
   </icon>
+  <action>access_internet</action>
+  <action>access_shared</action>
+  <buildId>2</buildId>
 </qnx>
