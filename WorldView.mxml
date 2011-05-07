@@ -39,10 +39,8 @@
 		}
 		public function destroy():void{
 			try{
-				if(coordTimer!=null){
-					clearInterval(coordTimer);
-					coordTimer=null;
-				}
+				clearInterval(coordTimer);
+				coordTimer=null;
 				if(conn){
 					conn.removeEventListener(ChatEvent.RECIEVED, chatRecieved);
 				}
