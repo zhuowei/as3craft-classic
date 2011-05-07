@@ -38,12 +38,22 @@
 			
 		}
 		public function destroy():void{
-			clearInterval(coordTimer);
-			coordTimer=null;
-			conn.removeEventListener(ChatEvent.RECIEVED, chatRecieved);
-			mapPane.destroy();
-			mapGroup.removeElement(mapPane);
-			mapPane=null;
+			try{
+				if(coordTimer!=null){
+					clearInterval(coordTimer);
+					coordTimer=null;
+				}
+				if(conn){
+					conn.removeEventListener(ChatEvent.RECIEVED, chatRecieved);
+				}
+				if(mapPane!=null){
+					mapPane.destroy();
+					mapGroup.removeElement(mapPane);
+					mapPane=null;
+				}
+			}
+			catch(e:Error){
+			}
 		}
 		protected function chatRecieved(e:ChatEvent):void{
 			messageArea.text=messageArea.text.slice(messageArea.text.indexOf("\n")+1).concat(removeColor(e.message)+"\n");
