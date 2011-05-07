@@ -33,12 +33,7 @@
 					if(e.location.substr(0,5)=="mc://"){
 						trace("got mc url: " + e.location);
 						e.preventDefault();
-						mcWebView.stage=null;
-						mcWebView.dispose();
-						mcWebView=null;
-						mcLoginWebviewSpacer.width=0;
-						mcLoginWebviewSpacer.height=0;
-						mcLoginButton.visible=true;
+						closeMCWebpage();
 						mcURLLogin(e.location);
 						return;
 					}
@@ -53,9 +48,24 @@
 
 				});
 			mcWebView.addEventListener("locationChange", function(e:LocationChangeEvent):void{
+					if(e.location.substr(0,5)=="mc://"){
+						trace("got mc url: " + e.location);
+						closeMCWebpage();
+						mcURLLogin(e.location);
+						return;
+					}
 					if(e.location.indexOf("minecraft.net/play.jsp")!=-1){
 						trace("found server login");
-						setTimeout(function(){mcWebpageLoad();}, 500); //let it load for a bit
+						setTimeout(function():void{mcWebpageLoad();}, 500); //let it load for a bit
+					}
+			});
+			mcWebView.addEventListener("complete", function(e:Event):void{
+					if(mcWebView.location.substr(0,5)=="mc://"){
+						trace("got mc url: " + mcWebView.location);
+						var loc:String = mcWebView.location;
+						closeMCWebpage();
+						mcURLLogin(loc);
+						return;
 					}
 			});
 			mcWebView.stage=this.stage;
@@ -68,6 +78,9 @@
 			mcWebView.loadURL(JAVASCRIPT_INJECT_URL);
 		}
 		protected function mcURLLogin(url:String):void{
+			if(mcWebView!=null){
+				closeMCWebpage();
+			}
 			var urlobj:MCURL;
 			try{
 				urlobj=MCURL.decode(url);
@@ -87,6 +100,19 @@
 			this.key=key;
 			dispatchEvent(new Event("login"));
 		}
+		private function closeMCWebpage():void{
+			mcWebView.stage=null;
+			mcWebView.dispose();
+			mcWebView=null;
+			mcLoginWebviewSpacer.width=0;
+			mcLoginWebviewSpacer.height=0;
+			mcLoginButton.visible=true;
+		}
+		private function findOnPage(str:String):void{
+			if(mcWebView){
+				mcWebView.loadURL("javascript:window.find('" + str + "');window.scrollTo(0, window.getSelection().focusNode.parentNode.offsetTop)");
+			}
+		}
 ]]>
 </fx:Script>
 <s:layout>
@@ -100,12 +126,17 @@
 <s:HGroup>
 	<s:Label text="Password: "/><s:TextInput id="passwordInput" displayAsPassword="true"/>
 </s:HGroup>-->
-<s:Label id="mcLoginLabel" text="Please log in and choose a server." visible="{!mcLoginButton.visible}"/>
+<s:HGroup visible="{!mcLoginButton.visible}">
+	<s:Label id="mcLoginLabel" text="Please log in and choose a server."/>
+	<s:TextInput id="findInput"/><s:Button label="Find" click="findOnPage(findInput.text)"/>
+</s:HGroup>
 <mx:Spacer id="mcLoginWebviewSpacer" width="0" height="0"/>
 <s:Button id="mcLoginButton" click="mineLogin()" label="Login to Minecraft.net"/>
 </s:VGroup>
 <s:Label text="Or enter a Minecraft Direct Connect url: "/>
 <s:HGroup>
-	<s:TextInput id="mcURLInput" width="{this.width*0.8}" enter="mcURLLogin(mcURLInput.text)"/><s:Button label="Go!" click="mcURLLogin(mcURLInput.text)"/>
+	<s:TextInput id="mcURLInput" width="{this.width*0.75}" enter="mcURLLogin(mcURLInput.text)"/>
+	<s:Button label="Paste" click="mcURLInput.text=Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT).toString();"/>
+	<s:Button label="Go!" click="mcURLLogin(mcURLInput.text)"/>
 </s:HGroup>
 </s:Panel>
