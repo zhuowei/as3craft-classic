@@ -10,6 +10,6 @@
   </icon>
   <action>access_internet</action>
   <action>access_shared</action>
-  <buildId>2</buildId>
+  <buildId>5</buildId>
   <platformVersion>1.0.0.0</platformVersion>
 </qnx>

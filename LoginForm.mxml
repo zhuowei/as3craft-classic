@@ -119,23 +119,17 @@
 	<s:VerticalLayout/>
 </s:layout>
 <s:VGroup id="loginPane">
-<!--<s:Label text="Minecraft.net login: "/>
-<s:HGroup>
-	<s:Label text="Username: "/><s:TextInput id="usernameInput"/>
-</s:HGroup>
-<s:HGroup>
-	<s:Label text="Password: "/><s:TextInput id="passwordInput" displayAsPassword="true"/>
-</s:HGroup>-->
+
 <s:HGroup visible="{!mcLoginButton.visible}">
-	<s:Label id="mcLoginLabel" text="Please log in and choose a server."/>
-	<s:TextInput id="findInput"/><s:Button label="Find" click="findOnPage(findInput.text)"/>
+	<s:Label id="mcLoginLabel" text="Please log in to the Minecraft website and choose a Minecraft Classic server. " fontSize="14"/>
+	<s:TextInput id="findInput"/><s:Button label="Find" click="findOnPage(findInput.text)" needsSoftKeyboard="true"/>
 </s:HGroup>
 <mx:Spacer id="mcLoginWebviewSpacer" width="0" height="0"/>
 <s:Button id="mcLoginButton" click="mineLogin()" label="Login to Minecraft.net"/>
 </s:VGroup>
 <s:Label text="Or enter a Minecraft Direct Connect url: "/>
 <s:HGroup>
-	<s:TextInput id="mcURLInput" width="{this.width*0.75}" enter="mcURLLogin(mcURLInput.text)"/>
+	<s:TextInput id="mcURLInput" width="{this.width*0.75}" enter="mcURLLogin(mcURLInput.text)" needsSoftKeyboard="true"/>
 	<s:Button label="Paste" click="mcURLInput.text=Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT).toString();"/>
 	<s:Button label="Go!" click="mcURLLogin(mcURLInput.text)"/>
 </s:HGroup>

@@ -10,20 +10,24 @@
 	import mx.controls.Alert;
 	import mx.managers.PopUpManager;
 	import flash.events.*;
+
+	public static const DEFAULT_TILESET:String = "default-terrain.png";
+
 	public var conn:MinecraftConnection;
 	public var settingsMgr:SettingsManager=SettingsManager.manager;
 	public var settingsWindow:SettingsWindow;
 	public var aboutWindow:AboutWindow;
+
 	public function start():void{
 		this.stage.addEventListener("orientationChange", orientationEventHandler);
 		loginForm.addEventListener("login", loginHandler);
 		//trace(splashLabel);
-		if(settingsMgr.tilesetURL!=null){
-			settingsMgr.loadTileset();
+		if(settingsMgr.tilesetURL == null){
+			loadDefaultTileset();
+			showTextureWarning();
 		}
-		else{
-			launchSettings();
-		}
+		settingsMgr.loadTileset();
+		splashLabel.text = SplashMessages.getSplash();
 	}
 	protected function orientationEventHandler(e:StageOrientationEvent):void{
 		this.width=this.stage.stageWidth;
@@ -93,6 +97,16 @@
 		aboutWindow.height=this.height*0.8;
 		PopUpManager.addPopUp(aboutWindow,this,true);
 	}
+	private function loadDefaultTileset():void{
+		settingsMgr.tilesetURL = DEFAULT_TILESET;
+	}
+	private function showTextureWarning():void{
+		Alert.show("There is currently no texture pack installed. A texture pack changes the way the game displays blocks. " + 
+				"The built-in texture pack will be loaded; however, it is missing images for some blocks, " +
+				"which makes them invisible. " +  
+				"To install a texture pack, transfer it to the Playbook and select it from the Settings" + 
+				" window, which can be opened from the main screen.");
+	}
 ]]>
 </fx:Script>
 <!--<local:LoginForm id="loginForm"/>-->
@@ -102,7 +116,7 @@
 			<s:VerticalLayout/>
 		</s:layout>
 		<s:Label text="AS3Craft Classic" fontSize="40"/>
-		<s:HGroup><mx:Spacer width="100%"/><s:Label id="splashLabel" text="10% less bugs!"/></s:HGroup>
+		<s:HGroup><mx:Spacer width="100%"/><s:Label id="splashLabel" text="This text does not exist!"/></s:HGroup>
 		<local:LoginForm id="loginForm" width="80%"/>
 		<s:HGroup><s:Button id="settingsButton" label="Settings..." click="launchSettings()"/>
 			<s:Button id="aboutButton" label="About..." click="launchAbout()"/>

@@ -9,31 +9,42 @@
 	import mx.controls.Alert;
 	import mx.managers.PopUpManager;
 	import deng.fzip.*;
+
 	protected function browseForTexture():void{
 		var file:File=new File();
 		file.addEventListener("select", fileSelected);
 		file.browseForOpen("Select texture pack or Terrain.png", 
-		[new FileFilter("Minecraft Terrain file","*.png"), new FileFilter("Minecraft Texture pack", "*.zip")]);
+		[new FileFilter("Minecraft Terrain file","*.png")]);
 		function fileSelected(e:Event):void{
 			trace("FileSelected");
 			file.removeEventListener("select",fileSelected);
-			trace(file.url.substr(file.url.length-4, 4));
-			switch(file.url.substr(file.url.length-4,4).toLowerCase()){
-				case ".png":
-					SettingsManager.manager.tilesetURL=file.url;
-					SettingsManager.manager.loadTileset();
-					break;
-				case ".zip":
-					if(!parseMinecraftZip(file)){
-						Alert.show("Error while loading Minecraft Texture Pack.");
-					}
-					SettingsManager.manager.loadTileset();
-					break;
-				default:
-					Alert.show("Incorrect file format: " + file.url);
-					break;
-			}
+			SettingsManager.manager.tilesetURL=file.url;
+			SettingsManager.manager.loadTileset();
 		}
+	}
+
+	protected function browseForZip():void{
+		/*var fileSearch:FileSearch=new FileSearch();
+		fileSearch.addEventListener("select", fileSelected);
+		fileSearch.searchString = "*.zip";
+		fileSearch.folder = File.desktopDirectory.resolvePath("shared/");
+		fileSearch.search();
+		PopUpManager.addPopUp(fileSearch, this, true);
+		function fileSelected(e:Event):void{
+			trace("FileSelected");
+			fileSearch.removeEventListener("select",fileSelected);
+			var file:File = new File(fileSearch.resultsGrid.selectedItem.nativePath);
+			try{
+				if(!parseMinecraftZip(file)){
+					Alert.show("Error while loading Minecraft Texture Pack in .zip format.");
+				}
+			}
+			catch(e:Error){
+				Alert.show("Error while loading .zip: " + e.toString());
+				return;
+			}
+			SettingsManager.manager.loadTileset();
+		}*/
 	}
 	public function parseMinecraftZip(file:File):Boolean{
 		trace(file);
@@ -74,8 +85,10 @@
 <s:layout>
 	<s:VerticalLayout/>
 </s:layout>
+<s:Label text="Select a texture pack: "/>
 <s:HGroup>
-<s:Label text="Select a texture pack: "/><s:Button label="Browse..." click="browseForTexture()"/>
+<!--<s:Button label="Browse for .zip files..." click="browseForZip()"/>--><s:Button label="Browse for terrain.png..." click="browseForTexture()"/>
 </s:HGroup>
-<s:Label text="Select a terrain.png file extracted from a Minecraft Beta texture pack." fontSize="10"/>
+<s:Label text="Select a Minecraft Beta texture pack, which changes the way the game displays blocks."  fontSize="12"/>
+<s:Label text="(Most texture packs are packaged in .zip format, and the terrain.png must be extracted before using)" fontSize="12"/>
 </s:TitleWindow>

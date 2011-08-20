@@ -79,12 +79,12 @@
 <s:layout>
 	<s:VerticalLayout/>
 </s:layout>
-<!--<s:TabBar id="viewBar" dataProvider="{mainStack}"/>-->
+
 <s:HGroup><s:Button label="Disconnect" click="if(conn){conn.disconnect()}"/><s:Label id="serverNameLabel" fontSize="12"/><s:Label id="serverMOTDLabel" fontSize="11"/></s:HGroup>
 <s:VGroup height="90%">
 		<s:VGroup id="chatPane" width="100%" verticalAlign="bottom">
 			<s:Label id="messageArea" width="100%"/>
-			<s:HGroup id="chatPaneInputGroup"><s:TextInput id="chatInput" enter="sendClicked()" width="{this.width*0.7}"/><s:Button click="sendClicked()" label="Send"/></s:HGroup>
+			<s:HGroup id="chatPaneInputGroup"><s:TextInput id="chatInput" enter="sendClicked()" width="{this.width*0.7}" needsSoftKeyboard="true"/><s:Button click="sendClicked()" label="Send"/></s:HGroup>
 		</s:VGroup>
 		<s:HGroup id="worldPane">
 			<s:VGroup id="mapGroup"></s:VGroup>
