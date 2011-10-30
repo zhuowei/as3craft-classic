@@ -33,8 +33,8 @@
 			mapPane.getBuildPermission();
 			blockList.visible=mapPane.canBuild;
 			cantBuildLabel.visible=!mapPane.canBuild;
-			serverNameLabel.text=conn.serverName;
-			serverMOTDLabel.text=conn.serverMOTD;
+			serverNameLabel.text=removeColor(conn.serverName);
+			serverMOTDLabel.text=(conn.serverMOTD.substring(0, 6) == "&0cfg=") ? "" : removeColor(conn.serverMOTD);
 			
 		}
 		public function destroy():void{

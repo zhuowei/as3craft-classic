@@ -54,7 +54,7 @@
 						mcURLLogin(e.location);
 						return;
 					}
-					if(e.location.indexOf("minecraft.net/play.jsp")!=-1){
+					if(e.location.indexOf("minecraft.net/classic/play")!=-1){
 						trace("found server login");
 						setTimeout(function():void{mcWebpageLoad();}, 500); //let it load for a bit
 					}
@@ -71,7 +71,7 @@
 			mcWebView.stage=this.stage;
 			var webviewPoint:Point=mcLoginWebviewSpacer.contentToGlobal(new Point(0,0));
 			mcWebView.viewPort=new Rectangle(webviewPoint.x, webviewPoint.y, mcLoginWebviewSpacer.width, WEBVIEW_HEIGHT);
-			mcWebView.loadURL("https://www.minecraft.net/login.jsp");
+			mcWebView.loadURL("https://www.minecraft.net/login");
 		}
 		/** injects the mc:// url maker into the StageWebView. */
 		protected function mcWebpageLoad():void{
@@ -120,10 +120,14 @@
 </s:layout>
 <s:VGroup id="loginPane">
 
-<s:HGroup visible="{!mcLoginButton.visible}">
+<s:VGroup visible="{!mcLoginButton.visible}">
 	<s:Label id="mcLoginLabel" text="Please log in to the Minecraft website and choose a Minecraft Classic server. " fontSize="14"/>
-	<s:TextInput id="findInput"/><s:Button label="Find" click="findOnPage(findInput.text)" needsSoftKeyboard="true"/>
-</s:HGroup>
+	<s:Label text="After logging in, you can paste a play.jsp or classic/play url in the box below." fontSize="12"/>
+	<s:HGroup><s:TextInput id="playUrlInput"/><s:Button label="Paste" click="playUrlInput.text=Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT).toString();"/>
+	<s:Button label="Go" click="mcWebView.loadURL(playUrlInput.text)"/></s:HGroup>
+	
+	<!--<s:TextInput id="findInput"/><s:Button label="Find" click="findOnPage(findInput.text)" needsSoftKeyboard="true" visible="False"/>-->
+</s:VGroup>
 <mx:Spacer id="mcLoginWebviewSpacer" width="0" height="0"/>
 <s:Button id="mcLoginButton" click="mineLogin()" label="Login to Minecraft.net"/>
 </s:VGroup>

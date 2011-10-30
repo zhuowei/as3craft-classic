@@ -101,11 +101,11 @@
 		settingsMgr.tilesetURL = DEFAULT_TILESET;
 	}
 	private function showTextureWarning():void{
-		Alert.show("There is currently no texture pack installed. A texture pack changes the way the game displays blocks. " + 
+		/*Alert.show("There is currently no texture pack installed. A texture pack changes the way the game displays blocks. " + 
 				"The built-in texture pack will be loaded; however, it is missing images for some blocks, " +
 				"which makes them invisible. " +  
 				"To install a texture pack, transfer it to the Playbook and select it from the Settings" + 
-				" window, which can be opened from the main screen.");
+				" window, which can be opened from the main screen.");*/
 	}
 ]]>
 </fx:Script>

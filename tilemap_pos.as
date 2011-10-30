@@ -36,8 +36,8 @@
  blocks[34]=new Point(1, 7); // Cloth DarkGray
  blocks[35]=new Point(2, 7); // Cloth Gray
  blocks[36]=new Point(0, 4); // Cloth White
- blocks[37]=new Point(12, 0); // Flower Yellow
- blocks[38]=new Point(13, 0); // Flower Red
+ blocks[37]=new Point(13, 0); // Flower Yellow
+ blocks[38]=new Point(12, 0); // Flower Red
  blocks[39]=new Point(13, 1); // Mushroom Brown
  blocks[40]=new Point(12, 1); // Mushroom Red
  blocks[41]=new Point(7, 1); // Block Gold
